@@ -6,20 +6,20 @@ import { getDistanceBetweenCoordinates } from '@/utils/get-distance-between-coor
 import { MaxDistanceError } from './errors/max-distance-erros'
 import { MaxNumberOfCheckInsError } from './errors/max-number-of-check-ins-error'
 
-interface ChekInUseCaseRequest {
+interface CheckInUseCaseRequest {
   userId: string
   gymId: string
   userLatitude: number
   userLongitude: number
 }
 
-interface ChekInUseCaseResponse {
+interface CheckInUseCaseResponse {
   checkIn: CheckIn
 }
 
-export class ChekInUseCase {
+export class CheckInUseCase {
   constructor(
-    private chekInsRepository: CheckInsRepository,
+    private checkInsRepository: CheckInsRepository,
     private gymsRepository: GymsRepository,
   ) {}
 
@@ -28,7 +28,7 @@ export class ChekInUseCase {
     gymId,
     userLatitude,
     userLongitude,
-  }: ChekInUseCaseRequest): Promise<ChekInUseCaseResponse> {
+  }: CheckInUseCaseRequest): Promise<CheckInUseCaseResponse> {
     const gym = await this.gymsRepository.findById(gymId)
 
     if (!gym) {
@@ -52,7 +52,7 @@ export class ChekInUseCase {
       throw new MaxDistanceError()
     }
 
-    const checkInOnSameDay = await this.chekInsRepository.findByUserIdOnDate(
+    const checkInOnSameDay = await this.checkInsRepository.findByUserIdOnDate(
       userId,
       new Date(),
     )
@@ -61,7 +61,7 @@ export class ChekInUseCase {
       throw new MaxNumberOfCheckInsError()
     }
 
-    const checkIn = await this.chekInsRepository.create({
+    const checkIn = await this.checkInsRepository.create({
       user_id: userId,
       gym_id: gymId,
     })
